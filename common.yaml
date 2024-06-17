@@ -1,0 +1,169 @@
+- name: init server
+  hosts: ALL
+  remote_user: root
+  become: true
+  vars:
+    ansible_remote_tmp: /tmp
+  tasks:
+  - name: install packages
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - openjdk-8-jdk
+      - rsync
+  - name: copy rpms and tars before install rsync
+    ansible.builtin.copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest}}"
+      mode: '0644'
+    with_items:
+      - { src: "config/hosts", dest: "/etc/hosts" }
+      - { src: "config/init_sql.sql", dest: "/root/dist/" }
+
+  - name: Ensure group "hadoop" exists
+    ansible.builtin.group:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - hadoop
+      - work
+  - name: create user and group
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      group: "{{ item.group }}"
+      shell: /bin/bash
+    with_items:
+      - { name: "hadoop", group: "hadoop" }
+      - { name: "work", group: "work" }
+  - name: Set authorized key taken from file
+    ansible.posix.authorized_key:
+      user: "{{ item }}"
+      state: present
+      key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+    with_items:
+      - hadoop
+      - work
+  - name: Set authorized key taken from file
+    ansible.posix.authorized_key:
+      user: "{{ item }}"
+      state: present
+      key: "{{ lookup('file', '{{ playbook_dir }}/config/id_rsa.pub') }}"
+    with_items:
+      - hadoop
+
+  - name: create folder for hadoop
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      mode: '0777'
+      owner: hadoop
+      group: hadoop
+    with_items:
+      - /opt/
+      - /opt/hadoop-3.3.6/logs
+      - /opt/spark-3.5.1-bin-hadoop3/logs
+      - /data/hdfs/tmp
+      - /data/hdfs/namenode
+      - /data/hdfs/datanode
+      - /data/hdfs/spark-warehouse
+
+  - name: patch jre
+    synchronize:
+      recursive: true
+      src: "{{ item.src }}"
+      dest: "{{ item.dest}}"
+      rsync_opts:
+        - "--exclude=media"
+    with_items:
+      - { src: "dist/mysql-connector-java-8.0.26.jar", dest: "/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext/" }
+
+- name: Copy and patch essential files
+  hosts: ALL
+  remote_user: hadoop
+  vars:
+    ansible_remote_tmp: /tmp
+  tasks:
+  - name: copy hadoop dist
+    synchronize:
+      recursive: true
+      src: "{{ item.src }}"
+      dest: "{{ item.dest}}"
+    with_items:
+      - { src: "dist/", dest: "/home/hadoop/dist" }
+
+  - name: Extract hadoopidst
+    ansible.builtin.unarchive:
+      src: "{{ item }}"
+      dest: /opt
+      remote_src: yes
+    with_items:
+      - /home/hadoop/dist/apache-hive-3.1.3-bin.tar.gz
+      - /home/hadoop/dist/hadoop-3.3.6.tar.gz
+      - /home/hadoop/dist/spark-3.5.1-bin-hadoop3.tgz
+
+  - name: patch hadoop configs
+    synchronize:
+      recursive: true
+      src: "{{ item.src }}"
+      dest: "{{ item.dest}}"
+      rsync_opts:
+        - "--exclude=media"
+    with_items:
+      - { src: "config/opt/", dest: "/opt/" }
+      - { src: "config/id_rsa", dest: "/home/hadoop/.ssh/" }
+      - { src: "config/id_rsa.pub", dest: "/home/hadoop/.ssh/" }
+
+  - name: chmod for id_rsa
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: file
+      mode: '0600'
+    with_items:
+      - /home/hadoop/.ssh/id_rsa
+
+
+  - name: config bashrc
+    lineinfile:
+      dest: "~/.bashrc"
+      line: "{{ item }}"
+    with_items:
+        - export TERM=xterm
+        - export HADOOP_HOME=/opt/hadoop-3.3.6
+        - export HIVE_HOME=/opt/apache-hive-3.1.3-bin/
+        - export SPARK_HOME=/opt/spark-3.5.1-bin-hadoop3/
+        - export HDFS_NAMENODE_OPTS="-XX:+UseParallelGC -Xmx2g"
+        - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/
+        - export HADOOP_CONF_DIR=/opt/hadoop-3.3.6/etc/hadoop/
+        - export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$SPARK_HOME/bin:$HIVE_HOME/bin
+        - export HDFS_NAMENODE_USER="hadoop"
+        - export HDFS_DATANODE_USER="hadoop"
+        - export HDFS_SECONDARYNAMENODE_USER="hadoop"
+        - export YARN_RESOURCEMANAGER_USER="hadoop"
+        - export YARN_NODEMANAGER_USER="hadoop"
+
+
+- name: Copy and patch essential files
+  hosts: ALL
+  remote_user: work
+  vars:
+    ansible_remote_tmp: /tmp
+  tasks:
+  - name: config bashrc
+    lineinfile:
+      dest: "~/.bashrc"
+      line: "{{ item }}"
+    with_items:
+        - export TERM=xterm    
+        - export HADOOP_HOME=/opt/hadoop-3.3.6
+        - export HIVE_HOME=/opt/apache-hive-3.1.3-bin/
+        - export SPARK_HOME=/opt/spark-3.5.1-bin-hadoop3/
+        - export HDFS_NAMENODE_OPTS="-XX:+UseParallelGC -Xmx2g"
+        - export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/        
+        - export HADOOP_CONF_DIR=/opt/hadoop-3.3.6/etc/hadoop/
+        - export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$SPARK_HOME/bin:$HIVE_HOME/bin
+        - export HDFS_NAMENODE_USER="work"
+        - export HDFS_DATANODE_USER="work"
+        - export HDFS_SECONDARYNAMENODE_USER="work"
+        - export YARN_RESOURCEMANAGER_USER="work"
+        - export YARN_NODEMANAGER_USER="work"

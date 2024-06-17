@@ -3,8 +3,8 @@
 
 
 - [x] 多节点 HDFS
-- [ ] Hive
-- [ ] Spark
+- [x] Hive
+- [x] Spark
 - [ ] Jupyter Notebook + Pyspark
 - [ ] Superset
 - [ ] Airflow
@@ -43,7 +43,52 @@
 ##### 修改 hosts 文件, ansible_inventory.ini
 将 config/hosts 和 ansible_inventory.ini 的 $nn0, $dn0, $dn1, $dn2 替换为服务器的 ip 地址.
 
+如果你有更多的 datanode, 需要在以上两个文件中,增加对应的服务器列表.
 
-[可选] 生成 ssh-key
+##### [可选] 生成 ssh-key
 如果不是生产环境, 这一步可以忽略.
-使用 ssh-keygen 生成一对 ssh 密钥,替换掉 `config/id_rsa` 和 `config/id_rsa.pub`. 如果你不知道怎么生成,可以跳过这一步
+使用 ssh-keygen 生成一对 ssh 密钥,替换掉 `config/id_rsa` 和 `config/id_rsa.pub`. 如果你不知道怎么生成,可以跳过这一步.
+
+#### 配置 ssh key
+这一步的目的是使 $P0 可以使用密钥,以 root 身份 ssh 登录所有的服务器,以便于对系统进行配置.
+
+将 $P0 的公钥,写入每一台服务器的 /root/.ssh/authorized_keys 文件.
+
+### 安装
+
+#### ansible
+执行以下两个 ansible 安装命令
+```
+ansible-playbook -i ansible_inventory.ini common.yaml
+ansible-playbook -i ansible_inventory.ini namenode.yaml
+```
+
+#### 初始化
+##### Mysql
+在 $nn0 上,使用 `root` 用户执行
+```
+mysql -uroot < /root/dist/init_sql.sql
+```
+
+##### Hadoop
+在 $nn0 上,使用 `hadoop` 用户执行
+```
+$HIVE_HOME/bin/schematool -initSchema -dbType mysql
+$HADOOP_HOME/bin/hdfs namenode -format
+```
+
+#### 启动服务
+在 $nn0 上,使用 `hadoop` 用户执行
+```
+$HADOOP_HOME/sbin/start-all.sh
+nohup $HIVE_HOME/bin/hive --service metastore 2>&1 >/dev/null &
+$SPARK_HOME/sbin/start-all.sh
+```
+
+首次安装,还需要创建一下目录:
+
+```
+hdfs dfs -mkdir -p /user/hive/warehouse
+hdfs dfs -mkdir /user/work
+hdfs dfs -chown work /user/work 
+```

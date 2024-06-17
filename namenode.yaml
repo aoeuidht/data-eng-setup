@@ -1,0 +1,39 @@
+- name: init namenode-000
+  hosts: namenode
+  remote_user: root
+  become: true
+  vars:
+    ansible_remote_tmp: /tmp
+
+  tasks:
+  - name: install packages
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - mysql-server
+  - name: config mysqld bind
+    lineinfile:
+      dest: "/etc/mysql/mysql.conf.d/mysqld.cnf"
+      regexp: '^bind-address'
+      line: 'bind-address = 0.0.0.0'
+      backup: yes
+  - name: Restart mysql
+    service:
+      name: mysql
+      state: restarted
+
+- name: start hadoop
+  hosts: namenode
+  remote_user: hadoop
+  vars:
+    ansible_remote_tmp: /tmp
+  tasks:
+
+  - name: config bashrc
+    lineinfile:
+      dest: "~/.bashrc"
+      line: "{{ item }}"
+    with_items:
+      - export SPARK_LOCAL_IP=namenode-000
+
