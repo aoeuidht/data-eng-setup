@@ -45,6 +45,14 @@
 
 如果你有更多的 datanode, 需要在以上两个文件中,增加对应的服务器列表.
 
+##### workers
+修改下列文件,将 workers 列表写入文件:
+```
+config/opt/hadoop-3.3.6/etc/hadoop/workers
+config/opt/spark-3.5.1-bin-hadoop3/conf/workers
+```
+
+
 ##### [可选] 生成 ssh-key
 如果不是生产环境, 这一步可以忽略.
 使用 ssh-keygen 生成一对 ssh 密钥,替换掉 `config/id_rsa` 和 `config/id_rsa.pub`. 如果你不知道怎么生成,可以跳过这一步.
@@ -85,7 +93,7 @@ nohup $HIVE_HOME/bin/hive --service metastore 2>&1 >/dev/null &
 $SPARK_HOME/sbin/start-all.sh
 ```
 
-首次安装,还需要创建一下目录:
+首次安装,还需要创建以下目录:
 
 ```
 hdfs dfs -mkdir -p /user/hive/warehouse
