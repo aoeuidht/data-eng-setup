@@ -1,0 +1,31 @@
+- name: init namenode-000
+  hosts: pyspark
+  remote_user: root
+  become: true
+  vars:
+    ansible_remote_tmp: /tmp
+
+  tasks:
+  - name: install packages
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - virtualenv
+
+- name: Copy and patch essential files
+  hosts: pyspark
+  remote_user: work
+  vars:
+    ansible_remote_tmp: /tmp
+  tasks:
+  - name: Install pyspark
+    ansible.builtin.pip:
+      virtualenv: /home/work/pyspark_env
+      extra_args: -i https://pypi.tuna.tsinghua.edu.cn/simple
+      name: "{{ item }}"
+    with_items:
+      - jupyterlab
+      - notebook
+      - pyspark
+

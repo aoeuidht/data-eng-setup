@@ -5,7 +5,7 @@
 - [x] 多节点 HDFS
 - [x] Hive
 - [x] Spark
-- [ ] Jupyter Notebook + Pyspark
+- [x] Jupyter Notebook + Pyspark
 - [ ] Superset
 - [ ] Airflow
 - [ ] Kerberos
@@ -43,7 +43,7 @@
 ##### 修改 hosts 文件, ansible_inventory.ini
 将 config/hosts 和 ansible_inventory.ini 的 $nn0, $dn0, $dn1, $dn2 替换为服务器的 ip 地址.
 
-如果你有更多的 datanode, 需要在以上两个文件中,增加对应的服务器列表.
+如果你有更多的 datanode, 需要在以上两个文件中,增加对应的服务器列表.同时将需要安装 jupyterlab/pyspark 的 ip 地址列表,写到 pyspark 里面.
 
 ##### workers
 修改下列文件,将 workers 列表写入文件:
@@ -69,6 +69,7 @@ config/opt/spark-3.5.1-bin-hadoop3/conf/workers
 ```
 ansible-playbook -i ansible_inventory.ini common.yaml
 ansible-playbook -i ansible_inventory.ini namenode.yaml
+ansible-playbook -i ansible_inventory.ini pyspark.yaml
 ```
 
 #### 初始化
@@ -100,3 +101,14 @@ hdfs dfs -mkdir -p /user/hive/warehouse
 hdfs dfs -mkdir /user/work
 hdfs dfs -chown work /user/work 
 ```
+
+#### 启动 jupyterlab
+
+在任意一台安装了 jupyterlab 的机器上, 使用 `work` 帐号运行(需要把 `$ip` 替换成真正的 IP 地址)
+```
+source /home/work/pyspark_env/bin/activate
+jupyter-lab --allow-root --no-browser --ip=$ip --port=8888
+```
+
+然后粘贴终端输出的 url ,在浏览器打开就可以了.
+如果需要默认安装更多包,可以修改 `pyspark.yaml` 中 pip 的部分.
