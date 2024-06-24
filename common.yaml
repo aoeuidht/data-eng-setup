@@ -12,14 +12,21 @@
     with_items:
       - openjdk-8-jdk
       - rsync
-  - name: copy rpms and tars before install rsync
-    ansible.builtin.copy:
+      - krb5-user
+      - sssd-krb5
+  - name: configs
+    synchronize:
+      recursive: true
       src: "{{ item.src }}"
       dest: "{{ item.dest}}"
-      mode: '0644'
+      rsync_opts:
+        - "--exclude=media"
     with_items:
       - { src: "config/hosts", dest: "/etc/hosts" }
       - { src: "config/init_sql.sql", dest: "/root/dist/" }
+      - { src: "config/kerberos/krb5.conf", dest: "/etc/" }      
+      - { src: "dist/mysql-connector-java-8.0.26.jar", dest: "/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext/" }
+
 
   - name: Ensure group "hadoop" exists
     ansible.builtin.group:
@@ -61,22 +68,14 @@
       group: hadoop
     with_items:
       - /opt/
+      - /opt/keytab/
+      - /opt/security/      
       - /opt/hadoop-3.3.6/logs
       - /opt/spark-3.5.1-bin-hadoop3/logs
       - /data/hdfs/tmp
       - /data/hdfs/namenode
       - /data/hdfs/datanode
       - /data/hdfs/spark-warehouse
-
-  - name: patch jre
-    synchronize:
-      recursive: true
-      src: "{{ item.src }}"
-      dest: "{{ item.dest}}"
-      rsync_opts:
-        - "--exclude=media"
-    with_items:
-      - { src: "dist/mysql-connector-java-8.0.26.jar", dest: "/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/ext/" }
 
 - name: Copy and patch essential files
   hosts: ALL
@@ -91,7 +90,13 @@
       dest: "{{ item.dest}}"
     with_items:
       - { src: "dist/", dest: "/home/hadoop/dist" }
+      - { src: "config/kerberos/keytab/", dest: "/opt/keytab/" }
+      - { src: "config/kerberos/security/", dest: "/opt/security/" }
 
+  - name: check hadoop bin status
+    stat:
+      path: /opt/hadoop-3.3.6/bin/hadoop
+    register: hadoop_bin
   - name: Extract hadoopidst
     ansible.builtin.unarchive:
       src: "{{ item }}"
@@ -101,6 +106,7 @@
       - /home/hadoop/dist/apache-hive-3.1.3-bin.tar.gz
       - /home/hadoop/dist/hadoop-3.3.6.tar.gz
       - /home/hadoop/dist/spark-3.5.1-bin-hadoop3.tgz
+    when: not hadoop_bin.stat.exists
 
   - name: patch hadoop configs
     synchronize:

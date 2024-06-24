@@ -34,5 +34,26 @@
   <property>
     <name>hadoop.proxyuser.server.groups</name>
     <value>*</value>
-  </property>  
+  </property>
+  <property>
+    <name>hadoop.security.auth_to_local</name>
+    <value>
+      RULE:[2:$1/$2@$0]([nds]n/.*@EXAMPLE\.COM)s/.*/hadoop/
+      RULE:[2:$1/$2@$0]([rn]m/.*@EXAMPLE\.COM)s/.*/hadoop/
+      RULE:[2:$1/$2@$0](jhs/.*@EXAMPLE\.COM)s/.*/hadoop/
+      DEFAULT
+    </value>
+  </property>
+  <property>
+    <name>hadoop.security.authentication</name>
+    <value>kerberos</value>
+  </property>
+  <property>
+    <name>hadoop.security.authorization</name>
+    <value>true</value>
+  </property>
+    <property>
+    <name>hadoop.rpc.protection</name>
+    <value>authentication</value>
+  </property>
 </configuration>

@@ -1,0 +1,44 @@
+- name: init server
+  hosts: kerberos
+  remote_user: root
+  become: true
+  vars:
+    ansible_remote_tmp: /tmp
+    default_realm: EXAMPLE.COM
+  tasks:
+  - name: install kerberos
+    ansible.builtin.apt:
+      name: "{{ item }}"
+      state: present
+    with_items:
+      - krb5-kdc
+      - krb5-admin-server
+
+  - name: check principal status
+    stat:
+      path: /etc/krb5kdc/.k5.EXAMPLE.COM
+    register: kdc_stash
+
+  - name: copy hadoop dist
+    synchronize:
+      recursive: true
+      src: "{{ item.src }}"
+      dest: "{{ item.dest}}"
+    with_items:
+      - { src: "config/kerberos/kdb5_dump.txt", dest: "/root/" }
+      - { src: "config/kerberos/kdc_stash.txt", dest: "/etc/krb5kdc/.k5.EXAMPLE.COM" }
+
+
+  - name: load kdc
+    ansible.builtin.shell: |
+      kdb5_util load /root/kdb5_dump.txt
+      kdb5_util stash -P 123456
+    args:
+      executable: /bin/bash
+    when: not kdc_stash.stat.exists
+
+  - name: Restart kdc
+    service:
+      name: krb5-kdc
+      state: restarted
+

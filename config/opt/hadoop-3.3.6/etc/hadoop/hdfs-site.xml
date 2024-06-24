@@ -25,4 +25,59 @@
     <name>dfs.datanode.data.dir</name>
     <value>/data/hdfs/datanode</value>
   </property>
+  <property>
+      <name>dfs.datanode.kerberos.principal</name>
+      <value>dn/hadoop@EXAMPLE.COM</value>
+    </property>
+
+    <property>
+      <name>dfs.datanode.keytab.file</name>
+      <value>/opt/keytab/dn.service.keytab</value>
+    </property>
+
+    <property>
+      <name>dfs.namenode.kerberos.principal</name>
+      <value>nn/hadoop@EXAMPLE.COM</value>
+    </property>
+
+    <property>
+      <name>dfs.namenode.keytab.file</name>
+      <value>/opt/keytab/nn.service.keytab</value>
+    </property>
+    <property>
+      <name>dfs.block.access.token.enable</name>
+      <value>true</value>
+    </property>
+
+<property>
+    <name>dfs.block.access.token.enable</name>
+    <value>true</value>
+</property>
+
+<property>
+<name>dfs.http.policy</name>
+<value>HTTPS_ONLY</value>
+</property>
+<property>
+    <name>dfs.data.transfer.protection</name>
+    <value>authentication</value>
+</property>
+  <property>
+    <name>dfs.datanode.address</name>
+    <value>0.0.0.0:20019</value>
+  </property>
+   
+  <property>
+    <name>dfs.datanode.http.address</name>
+    <value>0.0.0.0:10022</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+    <value>false</value>
+  </property>
+  <property>
+    <name>dfs.datanode.data.dir.perm</name>
+    <value>700</value> 
+  </property>
 </configuration>

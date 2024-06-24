@@ -429,8 +429,9 @@ export HADOOP_OS_TYPE=${HADOOP_OS_TYPE:-$(uname -s)}
 # By default, Hadoop uses jsvc which needs to know to launch a
 # server jvm.
 # export HADOOP_REGISTRYDNS_SECURE_EXTRA_OPTS="-jvm server"
-HDFS_NAMENODE_USER=hadoop
-HDFS_DATANODE_USER=hadoop
-HDFS_SECONDARYNAMENODE_USER=hadoop
-YARN_RESOURCEMANAGER_USER=hadoop
-YARN_NODEMANAGER_USER=hadoop
+export HDFS_NAMENODE_USER=hadoop
+export HDFS_DATANODE_USER=hadoop
+export HDFS_SECONDARYNAMENODE_USER=hadoop
+export YARN_RESOURCEMANAGER_USER=hadoop
+export YARN_NODEMANAGER_USER=hadoop
+export HADOOP_SECURE_DN_USER=
