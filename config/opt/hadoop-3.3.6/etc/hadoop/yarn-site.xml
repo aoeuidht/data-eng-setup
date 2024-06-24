@@ -19,24 +19,23 @@
     <name>yarn.resourcemanager.hostname</name>
     <value>namenode-000</value>
   </property>
-    <property>
-      <name> yarn.resourcemanager.keytab</name>
-      <value>/opt/keytab/rm.service.keytab</value>
-    </property>
+  <property>
+    <name> yarn.resourcemanager.keytab</name>
+    <value>/opt/keytab/rm.service.keytab</value>
+  </property>
 
-    <property>
-      <name>yarn.resourcemanager.principal</name>
-      <value>rm/hadoop@EXAMPLE.COM</value>
-    </property>
+  <property>
+    <name>yarn.resourcemanager.principal</name>
+    <value>rm/hadoop@EXAMPLE.COM</value>
+  </property>
 
-    <property>
-      <name> yarn.nodemanager.keytab</name>
-      <value>/opt/keytab/nm.service.keytab</value>
-    </property>
+  <property>
+    <name> yarn.nodemanager.keytab</name>
+    <value>/opt/keytab/nm.service.keytab</value>
+  </property>
 
-    <property>
-      <name>yarn.nodemanager.principal</name>
-      <value>nm/hadoop@EXAMPLE.COM</value>
-    </property>
-
+  <property>
+    <name>yarn.nodemanager.principal</name>
+    <value>nm/hadoop@EXAMPLE.COM</value>
+  </property>
 </configuration>

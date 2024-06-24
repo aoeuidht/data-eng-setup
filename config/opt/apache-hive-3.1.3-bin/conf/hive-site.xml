@@ -9,25 +9,25 @@
     <name>javax.jdo.option.ConnectionURL</name>
     <value>jdbc:mysql://namenode-000:3306/hive?allowPublicKeyRetrieval=true</value>
     <description>JDBC connect string for a JDBC metastore</description>
-</property>
+  </property>
 
- <property>
+  <property>
     <name>javax.jdo.option.ConnectionDriverName</name>
     <value>com.mysql.jdbc.Driver</value>
     <description>Driver class name for a JDBC metastore</description>
- </property>
+  </property>
 
- <property>
+  <property>
     <name>javax.jdo.option.ConnectionUserName</name>
     <value>dbuser</value>
     <description>username to use against metastore database</description>
- </property>
+  </property>
 
- <property>
+  <property>
     <name>javax.jdo.option.ConnectionPassword</name>
     <value>dbuser</value>
     <description>password to use against metastore database</description>
- </property><property>
+    </property><property>
     <name>hive.metastore.warehouse.dir</name>
     <value>/user/hive/warehouse</value>
     <description>location of default database for the warehouse</description>
