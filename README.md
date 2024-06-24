@@ -8,7 +8,7 @@
 - [x] Jupyter Notebook + Pyspark
 - [ ] Superset
 - [ ] Airflow
-- [ ] Kerberos
+- [x] Kerberos
 - [ ] Ranger
 
 ### Requirements
@@ -61,6 +61,32 @@ config/opt/spark-3.5.1-bin-hadoop3/conf/workers
 这一步的目的是使 $P0 可以使用密钥,以 root 身份 ssh 登录所有的服务器,以便于对系统进行配置.
 
 将 $P0 的公钥,写入每一台服务器的 /root/.ssh/authorized_keys 文件.
+
+##### [可选] 更新 kerberos 备份和 stash 文件
+如果不是生产环境, 这一步可以忽略.
+使用自己的 kdc 生成的 dump/stash/keytab, 替换 `config/kerberos` 中的:
+*  kdb5_dump.txt
+*  kdc_stash.txt
+*  keytab
+*  krb5.conf
+
+##### [可选] 替换 hadoop 使用的 SSL 证书
+如果不是生产环境, 这一步可以忽略.
+生成 ssl 证书, 替换 `config/kerberos/security` 目录下的文件:
+
+* cert.file
+* keystore.jks
+* truststore.jks
+* truststore_all.jks
+
+参考 https://www.kamalsblog.com/2017/08/securing-hadoop-with-kerbros-and-ssl.html 中的以下命令:
+
+```
+sudo keytool -genkey -alias ip-172-31-10-163.ap-south-1.compute.internal  -keyalg RSA -keysize 1024 -dname "CN=ip-172-31-10-163.ap-south-1.compute.internal" -keypass <KEYPASS> -keystore keystore.jks -storepass <STOREPASS>
+sudo keytool -export  -alias ip-172-31-10-163.ap-south-1.compute.internal  -keystore keystore.jks  -rfc -file cert.file  -storepass <STOREPASS>
+sudo keytool -import -noprompt -alias  ip-172-31-10-163.ap-south-1.compute.internal  -keystore truststore.jks  -file cert.file -storepass <STOREPASS>
+sudo keytool -import -noprompt -alias  ip-172-31-10-163.ap-south-1.compute.internal  -keystore truststore_all.jks  -file cert.file -storepass <STOREPASS>
+```
 
 ### 安装
 
