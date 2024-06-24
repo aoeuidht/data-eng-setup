@@ -79,6 +79,8 @@ config/opt/spark-3.5.1-bin-hadoop3/conf/workers
 * truststore.jks
 * truststore_all.jks
 
+更新证书之后,需要更新 `config/opt/hadoop-3.3.6/etc/hadoop/ssl-server.xml` 中的密码(如果被修改).
+
 参考 https://www.kamalsblog.com/2017/08/securing-hadoop-with-kerbros-and-ssl.html 中的以下命令:
 
 ```
@@ -96,6 +98,7 @@ sudo keytool -import -noprompt -alias  ip-172-31-10-163.ap-south-1.compute.inter
 ansible-playbook -i ansible_inventory.ini common.yaml
 ansible-playbook -i ansible_inventory.ini namenode.yaml
 ansible-playbook -i ansible_inventory.ini pyspark.yaml
+ansible-playbook -i ansible_inventory.ini kdc.yaml
 ```
 
 #### 初始化
