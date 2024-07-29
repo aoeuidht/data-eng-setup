@@ -84,13 +84,23 @@
   vars:
     ansible_remote_tmp: /tmp
   tasks:
+  - name: download hadoop dist
+    ansible.builtin.get_url:
+      url: "{{ item.src }}"
+      dest: "{{ item.dest}}"
+    with_items:
+      - { src: "https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz", dest: "/home/hadoop/dist/hadoop-3.3.6.tar.gz" }
+      - { src: "https://dlcdn.apache.org/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz", dest: "/home/hadoop/dist/apache-hive-3.1.3-bin.tar.gz" }
+      - { src: "https://dlcdn.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz", dest: "/home/hadoop/dist/spark-3.5.1-bin-hadoop3.tgz" }
+
   - name: copy hadoop dist
     synchronize:
       recursive: true
       src: "{{ item.src }}"
       dest: "{{ item.dest}}"
     with_items:
-      - { src: "dist/", dest: "/home/hadoop/dist" }
+      - { src: "dist/mysql-connector-java-8.0.26.jar", dest: "/home/hadoop/dist/" }
+      - { src: "dist/mariadb-java-client-3.3.3.jar", dest: "/home/hadoop/dist/" }
 
   - name: Extract hadoopidst
     ansible.builtin.unarchive:

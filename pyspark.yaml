@@ -1,10 +1,15 @@
-- name: init namenode-000
+- name: init pyenv
   hosts: pyspark
   remote_user: root
   become: true
   vars:
     ansible_remote_tmp: /tmp
-
+    users:
+    - { name: "Haochuan_Zhou", key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDTrn1aNlhFPuJ8l9d6m/gULMhoSWtva1rWtOOyKtjKcSLf/cxOsxHXhLfv7ck7a1Z2yOvf+u6+Thdtsn2Puy+aBntSXUz1nAOjRA7uz1GI8lPHDHrQclj8esZwIcpHuOn2JS60A2JX19a1gMr2YgXYkK6Agfif4GdmHhSg39NPHBHIfD+nOCecDNJwKPRgEkDHz+T7Hxg8vuwbf1qabTmfXfiT2ODCmH3boLCEWBdOakb92VIBfcvy7C2rkz8R8Q7gqnXCLdm/xEtXlTP5eY7KTWcD4bPgr96TM0AdrWAuemBjx2Cn1mdlhtpWwUd3gjxpWNWCZCLPJvm+HIIBeSsjmUWncvh0axvO95WQ1CEPdV3VCvBWlg2M6fstJcNSsUokmxGzc/MYc5qOczdi/ebtFLG4fbkjTvOa/+DO3+Jwmvd9zDX7ffr2NHo0F+dxGLZJnlAJGt16FE08FS3v6KiRC0OOz9y4f+Nf+8qDkJhtcVif4IZnO0CXZ3bFNo771nM= hz@Keyser.local" }
+    - { name: "Meihui_Wu", key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCYJw3G48Mqhs5NHBUCjSjYeyRKWCNkIHFoEKmfljH0i1SfSAd+NMeg9lZFDb56bU+lTmetckKs+zrY9DhqVyCFa9+hAfenfGgD32TKNq5+diFktREG9m2qQB2Wfxx/BZNCG/DV+ExIabOJLZG3fGwiRfFowqWRVgieizUuN8UfUqB2WTyVc00a993JclCbPlNEcxlOctmXSxWcsknh/PlF/KCHChOCw0B2KmptP65gYQ1IPc6JvjIiFhrUP1jB3SKVYWzPYyiGJi9SisKB5yKAiR7oGweaNJpovlbBdOfkxkW1jPt7GRxFI9+V/qCsX9Yv/4CJlXZ+aVHauNG7KigLWfOIPnBWySXBxb6ViWUPwg20uVwucU1zCRiOSEZgQ4PXZkWDkcK3WdHaC5SbnPiejIIUp3L68HtCvPnjndWfDVhJ6pfY3h2jiBBDiUMxPE7oUuRSwBnRFWWvMBPYWCpd3B3CqJq6gvxwRn8zbpiifbaV9SQ/L2sPgcBFGqCDtuM= wumeihui@es-macbook-pro.lan.uow.edu.au" }
+    - { name: "Yushu_Zhu", key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCoYxITOTT7V0HNTWNs5sY1uJoiQdcG4r5iKmqaTx+uSTgtiKFZdZuJ+XenquLF01efyy8gM0tQK0F0waDMcs8X3N/xlw8pQCTjdwjH5rvTysExZ+3+iedgLqJvdavh8B32sC9AYIkSaoIWaqtVpZM5yHGCxFac+2TQq8+aMY/0XeAHsUtY5TjqwF47otR8wk0A4VQjD/cHeE/QeJgbMtP/+JsZsARl9+YZfG8bMaw+Asu8kLuqkSXtYVIrlt4jPySu2Zg2ItVbekm4VdpDbiFAhZmWCzVWwrOH9eYsqxn7zKqaUICFRL91QS6m/v7cx6XXf3h9G/CoJ4feJwRaboh2mLkt0cH89r8sM2ZAtLd6SjnXjVPK46FoHAVXICrLqMbwxEj26FBWOu1dOBI6JXjev0Irj785z02PhulpAFG9EGj9q/S+eN0yQBXOaUPDTP7jCOGk4qlvDtlj8a5rbZSyzCNUtibicULRWkul/xMYg1Fxq5zewPxtV7390I6/0BU= yushu@yushudeMacBook-Pro.local" }
+    - { name: "Yifei_Wang", key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/RPQ1wfM3zgosYPjs3qejHvjMlvqYIZRgvX/mNMB6oeAI6R5kfOx16iV/sLoiG6QfHcOFVzu+2XmRdGPwNJE/BxN7qIn3LXLVR9pahyFFGFD97r4N6Gh0Wzpb2/Hjq4xgRaUQDR4qIuVFBO2l8T6wxJy0EBZjddjXlT3ufGPlsFpvKwXYDs7Jz/wcmFsqoPFFQda4voaDOwKNhBwxOmBiJgFahOW2tmKYJ65L2Q7yaAK/oXfOt0GySmLdYoKpv9OKql122YLbpD6+A/1UVClNN1tqup8w6DNnKhOWQQwDjejTgno3O8bc44F3CtLd6bAXiC//2SRqF/okZYqRfzhISbmkP/Hhw7iWkz0awrdo/RGr9xKqIv2/ApAcghZMFbwTCx+B+v632JlRWfEDtTIFo17o+8XdmU4hpgkG+bpXayFdOrv4ZjdFVR8rv9iX8Hq+icyy+/d9oVODsvH5chMUvq9V0TO73Snn42B2rQn0uTUrolMT9rebxfl00DIoo40= yw394@uowmail.edu.au" }
+    - { name: "Yaoyao_Wang", key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCeAGbN5zT2AHgLmbDLDbWv4rpoOModcZWLuJIwKBxZ3eWgmckqthHgMj/DGRs+dGhjK3b35Ni6QfwUofX2xEYE5bWPQj2HQwK6gM6TDKBPx8O/vviCR0DYkY9Frth6w3kIeb4a0RdEZl2Zzlujsqha52WxUtfIvoUIegFmvEwWTBrE32ijAdzVfnw6wknADTXvbYanBnnD3Op2muvbcc9slcxKb77+QZ3vPp7NpUHH/STYrBKH9Se5u3Fpi3HEWcCsRuEh+EMazHVAZVKezwonqXBijFFMKg/4mIGdxLYI6q5ALGZouuEUbNvFWbHu9ALIHr3+N/carAuGuE2Jli0eIgZXRCS2MbFmdknwHCgMqojwsueDqBLD2BxMBbkhr01R86YwRwuP9Vajq1iR4kusfQJY6Gf3tjkOCMj8KX3384ekUd4h7h7L0sVSqkwEfruaOJRIB4g/SwNBXqDOAPPKxyLjkbHWIYuMncpMutPVVkRlIctk+JWDlD8rOezXAWuUGIhihysEbWN+eome6j6Phy+jkRAa9SCynZjNFUeN2zq4P+ub4AyIBFPX+mTouYEcyB6oHGia7fxHMmpulqmV/jxoPzomf/xCOIkTl/TcYbx2QehhX8VArmRpupZ1+Fbn9yNaRNewAL34PuKYcQpqM21tVzzjeNxIMP+PbFuqTQ== cngongxingjiang@gmail.com" }
   tasks:
   - name: install packages
     ansible.builtin.apt:
@@ -13,19 +18,42 @@
     with_items:
       - virtualenv
 
-- name: Copy and patch essential files
-  hosts: pyspark
-  remote_user: work
-  vars:
-    ansible_remote_tmp: /tmp
-  tasks:
   - name: Install pyspark
     ansible.builtin.pip:
-      virtualenv: /home/work/pyspark_env
-      extra_args: -i https://pypi.tuna.tsinghua.edu.cn/simple
       name: "{{ item }}"
     with_items:
       - jupyterlab
       - notebook
       - pyspark
+
+  - name: create user and group
+    ansible.builtin.user:
+      name: "{{ item.name }}"
+      group: "work"
+      shell: /bin/bash
+    with_items: "{{ users }}"
+
+  - name: keys
+    authorized_key:
+      user: "{{ item.name }}"
+      state: present
+      manage_dir: yes
+      key: "{{ item.key }}"
+    with_items: "{{ users }}"
+
+  - name: config bashrc
+    become: yes
+    become_user: "{{ item.name }}"
+    lineinfile:
+      dest: "~/.bashrc"
+      line: |
+        export TERM=xterm
+        export HADOOP_HOME=/opt/hadoop-3.3.6
+        export HIVE_HOME=/opt/apache-hive-3.1.3-bin/
+        export SPARK_HOME=/opt/spark-3.5.1-bin-hadoop3/
+        export HDFS_NAMENODE_OPTS="-XX:+UseParallelGC -Xmx2g"
+        export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre/
+        export HADOOP_CONF_DIR=/opt/hadoop-3.3.6/etc/hadoop/
+        export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$SPARK_HOME/bin:$HIVE_HOME/bin
+    with_items: "{{ users }}"
 
